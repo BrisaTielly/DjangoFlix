@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -7,13 +7,13 @@ import json
 # Create your views here.
 
 @csrf_exempt
-def genreView(request):
+def genre_view(request):
     if request.method == 'GET':
         genres = Genre.objects.all()
-        list = []
+        data = []
         for genre in genres:
-            list.append({"id" : genre.id, "name" : genre.name})
-        return JsonResponse(list, safe=False)
+            data.append({"id" : genre.id, "name" : genre.name})
+        return JsonResponse(data, safe=False)
     
     elif request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
@@ -23,3 +23,11 @@ def genreView(request):
             {'id' : new_genre.id, 'name': new_genre.name}, 
             status = 201
         )
+
+@csrf_exempt
+def genre_detail_view(request, pk):
+    genre = get_object_or_404(Genre, pk=pk)
+    return JsonResponse(
+        {'id' : genre.id, 'name' : genre.name},
+        safe=False,
+    )

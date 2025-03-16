@@ -27,7 +27,22 @@ def genre_view(request):
 @csrf_exempt
 def genre_detail_view(request, pk):
     genre = get_object_or_404(Genre, pk=pk)
-    return JsonResponse(
-        {'id' : genre.id, 'name' : genre.name},
-        safe=False,
-    )
+
+    if request.method == 'GET':
+        return JsonResponse(
+            {'id' : genre.id, 'name' : genre.name}
+        )
+    elif request.method == 'PUT':
+        data = json.loads(request.body.decode('utf-8'))
+        genre.name = data['name']
+        genre.save()
+        return JsonResponse(
+            {'id' : genre.id, 'name' : genre.name},
+            status = 200
+        )
+    elif request.method == 'DELETE':
+        genre.delete()
+        return JsonResponse(
+            {'message' : 'Genero Deletado'},
+            status = 204,
+        )
